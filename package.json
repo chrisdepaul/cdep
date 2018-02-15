@@ -1,0 +1,17 @@
+{
+  "name": "v1",
+  "version": "1.0.0",
+  "description": "Generate starter files for Kontakt Script instrumnets",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "cdep": "./index.js"
+  },
+  "author": "Chris DePaul",
+  "license": "ISC",
+  "dependencies": {
+    "inquirer": "^5.1.0"
+  }
+}
