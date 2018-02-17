@@ -66,6 +66,12 @@ export const getUIComponentDetailQuestion = (component, index) => {
         },
         {
             type: 'input',
+            name: `default`,
+            message: `Set the default setting:`,
+            default: '0'
+        },
+        {
+            type: 'input',
             name: `group`,
             message: `Set the group index:`,
             default: '0'

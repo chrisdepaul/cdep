@@ -84,6 +84,7 @@ const askUIComponentDetails = () => {
                         unit: KNOB_UNIT[response.unit],
                         min: response.componentMin,
                         max: response.componentMax,
+                        default: response.default,
                         group: response.group,
                         slot: response.slot
                     }

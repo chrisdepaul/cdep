@@ -79,6 +79,11 @@ var getUIComponentDetailQuestion = exports.getUIComponentDetailQuestion = functi
         default: '100000'
     }, {
         type: 'input',
+        name: 'default',
+        message: 'Set the default setting:',
+        default: '0'
+    }, {
+        type: 'input',
         name: 'group',
         message: 'Set the group index:',
         default: '0'
