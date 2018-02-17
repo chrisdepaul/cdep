@@ -1,5 +1,5 @@
 {
-  "name": "v1",
+  "name": "cdep",
   "version": "1.0.0",
   "description": "Generate starter files for Kontakt Script instrumnets",
   "main": "index.js",
