@@ -1,0 +1,20 @@
+on init
+	message("")
+	make_perfview
+	set_ui_height_px(330)
+
+	{Declare UI Components - knobs}
+	declare %ui_knob_id[2]
+	declare ui_knob $knob1 (0, 100000, 1)
+	declare ui_knob $knob2 (0, 100000, 1)
+	%ui_knob_id[0] = get_ui_id($knob1)
+	%ui_knob_id[1] = get_ui_id($knob2)
+
+	{Declare UI Components - sliders}
+	declare %ui_slider_id[2]
+	declare ui_slider $slider1 (0, 100000)
+	declare ui_slider $slider2 (0, 100000)
+	%ui_slider_id[0] = get_ui_id($slider1)
+	%ui_slider_id[1] = get_ui_id($slider2)
+
+	{Setting Group and Env}
