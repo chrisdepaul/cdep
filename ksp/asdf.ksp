@@ -1,0 +1,1 @@
+{"instrumentName":"asdf","uiComponents":{"knobs":{},"sliders":{"RHt":{"name":"slider1","variableName":"$slider1","componentFunction":"ENGINE_PAR_ATTACK","min":"0","max":"100000"}}}}

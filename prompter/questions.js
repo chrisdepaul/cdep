@@ -1,5 +1,5 @@
 const { keys } = require('ramda')
-const { UI_COMPONENTS, UI_FUNCTIONS } = require('./componentContants.js')
+const { UI_COMPONENTS, UI_FUNCTIONS } = require('./componentConstants.js')
 
 export const askInstrumentNameQ = [
     {
@@ -41,7 +41,7 @@ export const getUIComponentDetailQuestion = (component, index) => {
             type: 'list',
             name: `componentFunction`,
             message: `What's the function of this ${comp}?`,
-            choices: () => keys(UI_FUNCTIONS).map(key => UI_FUNCTIONS[key])
+            choices: () => keys(UI_FUNCTIONS).map(key => key)
         },
         {
             type: 'input',
