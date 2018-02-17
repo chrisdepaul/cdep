@@ -9,12 +9,14 @@ var _require = require('ramda'),
 
 var _require2 = require('./componentConstants.js'),
     UI_COMPONENTS = _require2.UI_COMPONENTS,
-    UI_FUNCTIONS = _require2.UI_FUNCTIONS;
+    UI_FUNCTIONS = _require2.UI_FUNCTIONS,
+    KNOB_UNIT = _require2.KNOB_UNIT;
 
 var askInstrumentNameQ = exports.askInstrumentNameQ = [{
     type: 'input',
     name: 'instrumentName',
-    message: 'What\'s the instrument\'s name?'
+    message: 'What\'s the instrument\'s name?',
+    validate: requireInput
 }];
 
 var askUIComponentsQ = exports.askUIComponentsQ = [{
@@ -32,7 +34,8 @@ var getUIComponentQuantityQuestion = exports.getUIComponentQuantityQuestion = fu
     return [{
         type: 'input',
         name: 'numberOfComponent',
-        message: 'How many ' + component + ' do you want?'
+        message: 'How many ' + component + ' do you want?',
+        validate: requireInput
     }];
 };
 
@@ -53,6 +56,18 @@ var getUIComponentDetailQuestion = exports.getUIComponentDetailQuestion = functi
             });
         }
     }, {
+        type: 'list',
+        name: 'unit',
+        message: 'What\'s the unit of this ' + comp + '?',
+        choices: function choices() {
+            return keys(KNOB_UNIT).map(function (key) {
+                return key;
+            });
+        },
+        when: function when() {
+            return comp == 'knob';
+        }
+    }, {
         type: 'input',
         name: 'componentMin',
         message: 'Set the minimum function setting:',
@@ -63,4 +78,15 @@ var getUIComponentDetailQuestion = exports.getUIComponentDetailQuestion = functi
         message: 'Set the maximum function setting:',
         default: '100000'
     }];
+};
+
+var askUIHeightQ = exports.askUIHeightQ = [{
+    type: 'input',
+    name: 'uiHeight',
+    message: 'What\'s the UI height?',
+    default: '330'
+}];
+
+var requireInput = function requireInput(input) {
+    return input ? true : 'Response can\'t be empty';
 };

@@ -3,7 +3,7 @@ const { keys } = require('ramda')
 const rk = require('randomkey')
 const q = require('./questions')
 const { config } = require('./instrumentConfig.js')
-const { UI_FUNCTIONS } = require('./componentConstants.js')
+const { UI_FUNCTIONS, KNOB_UNIT } = require('./componentConstants.js')
 
 const { createKSP } = require('../generator');
 
@@ -12,7 +12,7 @@ const { createKSP } = require('../generator');
  * Launch questions
  */
 export const launch = () => {
-    askInstrumentName();
+    nextQuestion.ask()
 }
 
 /**
@@ -21,7 +21,7 @@ export const launch = () => {
 const askInstrumentName = () => {
     inquirer.prompt(q.askInstrumentNameQ).then(response => {
         config.instrumentName = response.instrumentName
-        askUIComponents()
+        nextQuestion.ask()
     })
 }
 
@@ -34,7 +34,7 @@ const askUIComponents = () => {
         response.uiComponents.forEach(comp => {            
             config.uiComponents[comp] = {}
         })
-        askUIComponentsQuantity()
+        nextQuestion.ask()
     })
 }
 
@@ -61,7 +61,7 @@ const askUIComponentsQuantity = () => {
     })
 
     // Call next question series
-    chain.then(askUIComponentDetails)
+    chain.then(nextQuestion.ask)
 }
 
 /**
@@ -81,6 +81,7 @@ const askUIComponentDetails = () => {
                         name: response.componentName,
                         variableName: `$${response.componentName}`,
                         componentFunction: UI_FUNCTIONS[response.componentFunction],
+                        unit: KNOB_UNIT[response.unit],
                         min: response.componentMin,
                         max: response.componentMax
                     }
@@ -90,6 +91,43 @@ const askUIComponentDetails = () => {
     })
 
     chain.then(() => {
-        createKSP(config)
+        nextQuestion.ask()
     })
 }
+
+/**
+ * Input: Ask the size of the instrument view
+ */
+const askUIHeight = () => {
+    inquirer.prompt(q.askUIHeightQ).then(response => {
+        config.uiHeight = response.uiHeight
+        nextQuestion.ask()
+    })
+}
+
+/** 
+ * Set the order of questions to ask
+*/
+const questionController = () => {
+    let index = 0;
+    const askQuestion = [
+        askInstrumentName,
+        askUIComponents,
+        askUIComponentsQuantity,
+        askUIComponentDetails,
+        askUIHeight,
+    ];
+
+    return {
+        ask: () => {
+            if(askQuestion[index]) {
+                askQuestion[index]()
+                index++
+            } else {
+                createKSP(config)
+            }
+        }
+    } 
+}
+
+const nextQuestion = new questionController()

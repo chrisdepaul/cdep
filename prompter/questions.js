@@ -1,11 +1,12 @@
 const { keys } = require('ramda')
-const { UI_COMPONENTS, UI_FUNCTIONS } = require('./componentConstants.js')
+const { UI_COMPONENTS, UI_FUNCTIONS, KNOB_UNIT } = require('./componentConstants.js')
 
 export const askInstrumentNameQ = [
     {
         type: 'input',
         name: 'instrumentName',
-        message: 'What\'s the instrument\'s name?'
+        message: 'What\'s the instrument\'s name?',
+        validate: requireInput
     }
 ]
 
@@ -23,7 +24,8 @@ export const getUIComponentQuantityQuestion = (component) => {
         {
             type: 'input',
             name: `numberOfComponent`,
-            message: `How many ${component} do you want?`
+            message: `How many ${component} do you want?`,
+            validate: requireInput
         }
     ]
 }
@@ -44,6 +46,13 @@ export const getUIComponentDetailQuestion = (component, index) => {
             choices: () => keys(UI_FUNCTIONS).map(key => key)
         },
         {
+            type: 'list',
+            name: `unit`,
+            message: `What's the unit of this ${comp}?`,
+            choices: () => keys(KNOB_UNIT).map(key => key),
+            when: () => comp == 'knob'
+        },
+        {
             type: 'input',
             name: `componentMin`,
             message: `Set the minimum function setting:`,
@@ -56,4 +65,17 @@ export const getUIComponentDetailQuestion = (component, index) => {
             default: '100000'
         }
     ]
+}
+
+export const askUIHeightQ = [
+    {
+        type: 'input',
+        name: 'uiHeight',
+        message: 'What\'s the UI height?',
+        default: '330'
+    }
+]
+
+const requireInput = (input) => {
+    return input ? true : 'Response can\'t be empty'
 }

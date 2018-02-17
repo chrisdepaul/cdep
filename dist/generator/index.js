@@ -16,6 +16,8 @@ var createKSP = exports.createKSP = function createKSP(config) {
     initialization(ksp, config, 1);
     declareComponents(ksp, config, 1);
 
+    setDefaultValues(ksp, config, 1);
+
     groupsAndSlots(ksp, config, 1);
     powerComponents(ksp, config, 1);
 
@@ -37,7 +39,7 @@ var endOn = function endOn(ksp) {
 var initialization = function initialization(ksp, config, tabLevel) {
     ksp.writeCode('message("")', tabLevel);
     ksp.writeCode('make_perfview', tabLevel);
-    ksp.writeCode('set_ui_height_px(330)', tabLevel);
+    ksp.writeCode('set_ui_height_px(' + config.uiHeight + ')', tabLevel);
 };
 
 var declareComponents = function declareComponents(ksp, config, tabLevel) {
@@ -47,12 +49,15 @@ var declareComponents = function declareComponents(ksp, config, tabLevel) {
         var uiArray = '%ui_' + comp.slice(0, -1) + '_id';
         var uiArrayLength = keys(path([comp], uic)).length;
         var id_array = [];
+        var units_array = [];
         ksp.writeCode('declare ' + uiArray + '[' + uiArrayLength + ']', tabLevel);
         keys(path([comp], uic)).forEach(function (key, i) {
             var item = path([comp, key], uic);
             switch (comp) {
                 case 'knobs':
                     ksp.writeCode('declare ui_knob ' + item.variableName + ' (' + item.min + ', ' + item.max + ', 1)', tabLevel);
+                    // Save units
+                    units_array.push('set_knob_unit(' + item.variableName + ', ' + item.unit + ')');
                     break;
 
                 case 'sliders':
@@ -65,8 +70,25 @@ var declareComponents = function declareComponents(ksp, config, tabLevel) {
         });
 
         // Write id array code
+        units_array.forEach(function (item) {
+            return ksp.writeCode(item, tabLevel);
+        });
+
+        // Write id array code
         id_array.forEach(function (item) {
             return ksp.writeCode(item, tabLevel);
+        });
+    });
+};
+
+var setDefaultValues = function setDefaultValues(ksp, config, tabLevel) {
+    var uic = path(['uiComponents'], config);
+    ksp.writeComment('Set Default Values', tabLevel);
+    keys(uic).forEach(function (comp) {
+        keys(path([comp], uic)).forEach(function (key, i) {
+            var item = path([comp, key], uic);
+            var defaultValue = 0; // Could be a config quesiton
+            ksp.writeCode('set_knob_defval(' + item.variableName + ', ' + defaultValue + ')', tabLevel);
         });
     });
 };

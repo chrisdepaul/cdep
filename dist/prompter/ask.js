@@ -15,7 +15,8 @@ var _require2 = require('./instrumentConfig.js'),
     config = _require2.config;
 
 var _require3 = require('./componentConstants.js'),
-    UI_FUNCTIONS = _require3.UI_FUNCTIONS;
+    UI_FUNCTIONS = _require3.UI_FUNCTIONS,
+    KNOB_UNIT = _require3.KNOB_UNIT;
 
 var _require4 = require('../generator'),
     createKSP = _require4.createKSP;
@@ -26,7 +27,7 @@ var _require4 = require('../generator'),
 
 
 var launch = exports.launch = function launch() {
-    askInstrumentName();
+    nextQuestion.ask();
 };
 
 /**
@@ -35,7 +36,7 @@ var launch = exports.launch = function launch() {
 var askInstrumentName = function askInstrumentName() {
     inquirer.prompt(q.askInstrumentNameQ).then(function (response) {
         config.instrumentName = response.instrumentName;
-        askUIComponents();
+        nextQuestion.ask();
     });
 };
 
@@ -48,7 +49,7 @@ var askUIComponents = function askUIComponents() {
         response.uiComponents.forEach(function (comp) {
             config.uiComponents[comp] = {};
         });
-        askUIComponentsQuantity();
+        nextQuestion.ask();
     });
 };
 
@@ -73,7 +74,7 @@ var askUIComponentsQuantity = function askUIComponentsQuantity() {
     });
 
     // Call next question series
-    chain.then(askUIComponentDetails);
+    chain.then(nextQuestion.ask);
 };
 
 /**
@@ -93,6 +94,7 @@ var askUIComponentDetails = function askUIComponentDetails() {
                         name: response.componentName,
                         variableName: '$' + response.componentName,
                         componentFunction: UI_FUNCTIONS[response.componentFunction],
+                        unit: KNOB_UNIT[response.unit],
                         min: response.componentMin,
                         max: response.componentMax
                     };
@@ -102,6 +104,37 @@ var askUIComponentDetails = function askUIComponentDetails() {
     });
 
     chain.then(function () {
-        createKSP(config);
+        nextQuestion.ask();
     });
 };
+
+/**
+ * Input: Ask the size of the instrument view
+ */
+var askUIHeight = function askUIHeight() {
+    inquirer.prompt(q.askUIHeightQ).then(function (response) {
+        config.uiHeight = response.uiHeight;
+        nextQuestion.ask();
+    });
+};
+
+/** 
+ * Set the order of questions to ask
+*/
+var questionController = function questionController() {
+    var index = 0;
+    var askQuestion = [askInstrumentName, askUIComponents, askUIComponentsQuantity, askUIComponentDetails, askUIHeight];
+
+    return {
+        ask: function ask() {
+            if (askQuestion[index]) {
+                askQuestion[index]();
+                index++;
+            } else {
+                createKSP(config);
+            }
+        }
+    };
+};
+
+var nextQuestion = new questionController();

@@ -35,7 +35,7 @@ var GenerateKSP = function () {
         value: function closeFile() {
             if (this.fd) {
                 fs.close(this.fd, function () {
-                    console.log('wrote the file successfully');
+                    console.log('The KSP has been genereated!');
                 });
             }
         }
