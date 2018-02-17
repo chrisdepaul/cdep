@@ -96,7 +96,9 @@ var askUIComponentDetails = function askUIComponentDetails() {
                         componentFunction: UI_FUNCTIONS[response.componentFunction],
                         unit: KNOB_UNIT[response.unit],
                         min: response.componentMin,
-                        max: response.componentMax
+                        max: response.componentMax,
+                        group: response.group,
+                        slot: response.slot
                     };
                 });
             });

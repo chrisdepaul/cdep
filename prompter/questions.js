@@ -63,7 +63,19 @@ export const getUIComponentDetailQuestion = (component, index) => {
             name: `componentMax`,
             message: `Set the maximum function setting:`,
             default: '100000'
-        }
+        },
+        {
+            type: 'input',
+            name: `group`,
+            message: `Set the group index:`,
+            default: '0'
+        },
+        {
+            type: 'input',
+            name: `slot`,
+            message: `Set the slot index:`,
+            default: '0'
+        },
     ]
 }
 

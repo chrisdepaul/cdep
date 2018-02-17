@@ -36,6 +36,13 @@ class GenerateKSP {
         });
     }
 
+    blankLine () {
+        let buffer = new Buffer('\n')        
+        fs.write(this.fd, buffer, 0, buffer.length, null, (err) => {
+            if (err) throw 'error writing file: ' + err;
+        });
+    }
+
     makeIndents (num) {
         return join('', repeat('\t', num))
     }

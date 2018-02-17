@@ -4,29 +4,29 @@ const { keys, path } = require('ramda');
 export const createKSP = (config) => {
     const ksp = new GenerateKSP(config)
     
-    startOnInit(ksp)
+    startOnInit(ksp, 0)
         initialization(ksp, config, 1)
         declareComponents(ksp, config, 1)
 
         setDefaultValues(ksp, config, 1)
 
-        groupsAndSlots(ksp, config, 1)
         powerComponents(ksp, config, 1)
 
         makePersistant(ksp, config, 1)
         readPersistant(ksp, config, 1)
-    endOn(ksp)
+    endOn(ksp, 0)
 
+    generateOnUIControl(ksp, config, 0)
 
     ksp.closeFile()
 }
 
-const startOnInit = (ksp) => {
-    ksp.writeCode('on init', 0)
+const startOnInit = (ksp, tabLevel) => {
+    ksp.writeCode('on init', tabLevel)
 }
 
-const endOn = (ksp) => {
-    ksp.writeCode('end on', 0)
+const endOn = (ksp,tabLevel) => {
+    ksp.writeCode('end on', tabLevel)
 }
 
 const initialization = (ksp, config, tabLevel) => {
@@ -83,16 +83,6 @@ const setDefaultValues = (ksp, config, tabLevel) => {
     });
 }
 
-// This is all static right now...should be configurable
-const groupsAndSlots = (ksp, config, tabLevel) => {
-    ksp.writeComment(`Setting Group and Env`, tabLevel)
-    
-    ksp.writeCode(`declare $group_idx`, tabLevel)
-    ksp.writeCode(`declare $slot_idx`, tabLevel)
-    ksp.writeCode(`$group_idx := 0`, tabLevel)
-    ksp.writeCode(`$slot_idx := 0`, tabLevel)
-}
-
 const powerComponents = (ksp, config, tabLevel) => {
     const uic = path(['uiComponents'], config);
     ksp.writeComment(`Power Variables`, tabLevel)
@@ -100,7 +90,7 @@ const powerComponents = (ksp, config, tabLevel) => {
         keys(path([comp], uic)).forEach((key, i) => {
             const item = path([comp, key], uic)
             // indexs are static for now
-            ksp.writeCode(`${item.variableName} := get_engine_par(${item.componentFunction}, $group_idx, $slot_idx, -1)`, tabLevel)
+            ksp.writeCode(`${item.variableName} := get_engine_par(${item.componentFunction}, ${item.group}, ${item.slot}, -1)`, tabLevel)
         })
     });
 }
@@ -123,6 +113,23 @@ const readPersistant = (ksp, config, tabLevel) => {
         keys(path([comp], uic)).forEach((key, i) => {
             const item = path([comp, key], uic)
             ksp.writeCode(`read_persistent_var(${item.variableName})`, tabLevel)
+        })
+    });
+}
+
+const generateOnUIControl = (ksp, config, tabLevel) => {
+    const uic = path(['uiComponents'], config);
+    keys(uic).forEach((comp) => {
+        keys(path([comp], uic)).forEach((key, i) => {
+            const item = path([comp, key], uic)
+            ksp.blankLine();
+            ksp.writeCode(`on ui_control(${item.variableName})`, tabLevel)
+                ksp.writeCode(`declare $count := 0`, tabLevel + 1)
+                ksp.writeCode(`while ($count < $NUM_GROUPS)`, tabLevel + 1)
+                    ksp.writeCode(`set_engine_par(${item.componentFunction}, ${item.variableName}, $count, ${item.slot}, -1)`, tabLevel + 2)
+                    ksp.writeCode(`inc($count)`, tabLevel + 2)
+                ksp.writeCode(`end while`, tabLevel + 1)
+            ksp.writeCode(`end on`, tabLevel)
         })
     });
 }
