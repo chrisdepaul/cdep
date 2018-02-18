@@ -3,20 +3,28 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.askUIHeightQ = exports.askModifierKeysDetailsQ = exports.askOtherComponentsQ = exports.getUIComponentDetailQuestion = exports.getUIComponentQuantityQuestion = exports.askUIComponentsQ = exports.askInstrumentNameQ = undefined;
+
+var _componentConstants = require('./componentConstants.js');
 
 var _require = require('ramda'),
-    keys = _require.keys;
+    keys = _require.keys,
+    values = _require.values,
+    isEmpty = _require.isEmpty;
 
 var _require2 = require('./componentConstants.js'),
     UI_COMPONENTS = _require2.UI_COMPONENTS,
     UI_FUNCTIONS = _require2.UI_FUNCTIONS,
-    KNOB_UNIT = _require2.KNOB_UNIT;
+    KNOB_UNIT = _require2.KNOB_UNIT,
+    OTHER_COMPONENTS = _require2.OTHER_COMPONENTS;
 
 var askInstrumentNameQ = exports.askInstrumentNameQ = [{
     type: 'input',
     name: 'instrumentName',
     message: 'What\'s the instrument\'s name?',
-    validate: requireInput
+    validate: function validate(input) {
+        return isEmpty(input) ? 'Must provide name' : true;
+    }
 }];
 
 var askUIComponentsQ = exports.askUIComponentsQ = [{
@@ -51,7 +59,7 @@ var getUIComponentDetailQuestion = exports.getUIComponentDetailQuestion = functi
         name: 'componentFunction',
         message: 'What\'s the function of this ' + comp + '?',
         choices: function choices() {
-            return keys(UI_FUNCTIONS).map(function (key) {
+            return values(_componentConstants.UI_FUNCTIONS_SELECTION_NAMES).map(function (key) {
                 return key;
             });
         }
@@ -95,6 +103,29 @@ var getUIComponentDetailQuestion = exports.getUIComponentDetailQuestion = functi
     }];
 };
 
+var askOtherComponentsQ = exports.askOtherComponentsQ = [{
+    type: 'checkbox',
+    name: 'otherComponents',
+    message: 'Do you want additional components?',
+    choices: function choices() {
+        return keys(OTHER_COMPONENTS).map(function (key) {
+            return OTHER_COMPONENTS[key];
+        });
+    }
+}];
+
+var askModifierKeysDetailsQ = exports.askModifierKeysDetailsQ = [{
+    type: 'input',
+    name: 'modifier_first',
+    message: 'first modifier key:',
+    default: '1'
+}, {
+    type: 'input',
+    name: 'modifier_last',
+    message: 'last modifier key:',
+    default: '12'
+}];
+
 var askUIHeightQ = exports.askUIHeightQ = [{
     type: 'input',
     name: 'uiHeight',
@@ -103,5 +134,5 @@ var askUIHeightQ = exports.askUIHeightQ = [{
 }];
 
 var requireInput = function requireInput(input) {
-    return input ? true : 'Response can\'t be empty';
+    return isEmpty(input) ? 'Response can\'t be empty' : true;
 };

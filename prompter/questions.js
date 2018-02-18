@@ -1,12 +1,14 @@
-const { keys } = require('ramda')
-const { UI_COMPONENTS, UI_FUNCTIONS, KNOB_UNIT } = require('./componentConstants.js')
+import { UI_FUNCTIONS_SELECTION_NAMES } from './componentConstants.js';
+
+const { keys, values, isEmpty } = require('ramda')
+const { UI_COMPONENTS, UI_FUNCTIONS, KNOB_UNIT, OTHER_COMPONENTS } = require('./componentConstants.js')
 
 export const askInstrumentNameQ = [
     {
         type: 'input',
         name: 'instrumentName',
         message: 'What\'s the instrument\'s name?',
-        validate: requireInput
+        validate: (input) => isEmpty(input) ? 'Must provide name' : true
     }
 ]
 
@@ -43,7 +45,7 @@ export const getUIComponentDetailQuestion = (component, index) => {
             type: 'list',
             name: `componentFunction`,
             message: `What's the function of this ${comp}?`,
-            choices: () => keys(UI_FUNCTIONS).map(key => key)
+            choices: () => values(UI_FUNCTIONS_SELECTION_NAMES).map(key => key)
         },
         {
             type: 'list',
@@ -85,6 +87,31 @@ export const getUIComponentDetailQuestion = (component, index) => {
     ]
 }
 
+export const askOtherComponentsQ = [
+    {
+        type: 'checkbox',
+        name: 'otherComponents',
+        message: 'Do you want additional components?',
+        choices: () => keys(OTHER_COMPONENTS).map(key => OTHER_COMPONENTS[key])
+    }
+]
+
+
+export const askModifierKeysDetailsQ = [
+    {
+        type: 'input',
+        name: 'modifier_first',
+        message: 'first modifier key:',
+        default: '1'
+    },
+    {
+        type: 'input',
+        name: 'modifier_last',
+        message: 'last modifier key:',
+        default: '12'
+    }
+]
+
 export const askUIHeightQ = [
     {
         type: 'input',
@@ -95,5 +122,5 @@ export const askUIHeightQ = [
 ]
 
 const requireInput = (input) => {
-    return input ? true : 'Response can\'t be empty'
+    return isEmpty(input) ? 'Response can\'t be empty' : true
 }

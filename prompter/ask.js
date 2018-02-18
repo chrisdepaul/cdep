@@ -1,9 +1,9 @@
 const inquirer = require('inquirer')
-const { keys } = require('ramda')
+const { keys, invert, pathOr, isEmpty } = require('ramda')
 const rk = require('randomkey')
 const q = require('./questions')
 const { config } = require('./instrumentConfig.js')
-const { UI_FUNCTIONS, KNOB_UNIT } = require('./componentConstants.js')
+const { UI_FUNCTIONS, KNOB_UNIT, UI_FUNCTIONS_SELECTION_NAMES, OTHER_COMPONENTS } = require('./componentConstants.js')
 
 const { createKSP } = require('../generator');
 
@@ -30,10 +30,12 @@ const askInstrumentName = () => {
  */
 const askUIComponents = () => {
     inquirer.prompt(q.askUIComponentsQ).then(response => {
-        config.uiComponents = {}
-        response.uiComponents.forEach(comp => {            
-            config.uiComponents[comp] = {}
-        })
+        if (!isEmpty(pathOr(false, ['uiComponents'], response))) {
+            config.uiComponents = {}
+            response.uiComponents.forEach(comp => {            
+                config.uiComponents[comp] = {}
+            })
+        }
         nextQuestion.ask()
     })
 }
@@ -80,7 +82,7 @@ const askUIComponentDetails = () => {
                     config.uiComponents[comp][item] = {
                         name: response.componentName,
                         variableName: `$${response.componentName}`,
-                        componentFunction: UI_FUNCTIONS[response.componentFunction],
+                        componentFunction: UI_FUNCTIONS[invert(UI_FUNCTIONS_SELECTION_NAMES)[response.componentFunction]],
                         unit: KNOB_UNIT[response.unit],
                         min: response.componentMin,
                         max: response.componentMax,
@@ -96,6 +98,42 @@ const askUIComponentDetails = () => {
     chain.then(() => {
         nextQuestion.ask()
     })
+}
+
+const askOtherComponents = () => {
+    let chain = Promise.resolve()
+    chain = chain.then(() => {
+        return inquirer.prompt(q.askOtherComponentsQ).then(response => {
+            if (!isEmpty(pathOr(false, ['otherComponents'], response))) {
+                config.otherComponents = {}
+                response.otherComponents.forEach(comp => {            
+                    config.otherComponents[invert(OTHER_COMPONENTS)[comp][0]] = {}
+                })
+            }
+        })
+    })
+
+    // Call next question series
+    chain.then(nextQuestion.ask)
+}
+
+const askOtherComponentsDetails = () => {
+    const compList = keys(config.otherComponents)
+    let chain = Promise.resolve()
+
+    compList.forEach((comp, i) => {
+        // Ask about Modifier Keys
+        if(comp == 'modifierKeys') {
+            chain = chain.then(() => {
+                return inquirer.prompt(q.askModifierKeysDetailsQ).then(response => {
+                    config.otherComponents.modifierKeys.first = response.modifier_first
+                    config.otherComponents.modifierKeys.last = response.modifier_last
+                })
+            })
+        }
+    })
+    // Call next question series
+    chain.then(nextQuestion.ask)
 }
 
 /**
@@ -118,6 +156,8 @@ const questionController = () => {
         askUIComponents,
         askUIComponentsQuantity,
         askUIComponentDetails,
+        askOtherComponents,
+        askOtherComponentsDetails,
         askUIHeight,
     ];
 
@@ -127,6 +167,7 @@ const questionController = () => {
                 askQuestion[index]()
                 index++
             } else {
+                console.log(config)
                 createKSP(config)
             }
         }

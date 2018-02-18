@@ -6,7 +6,10 @@ Object.defineProperty(exports, "__esModule", {
 var inquirer = require('inquirer');
 
 var _require = require('ramda'),
-    keys = _require.keys;
+    keys = _require.keys,
+    invert = _require.invert,
+    pathOr = _require.pathOr,
+    isEmpty = _require.isEmpty;
 
 var rk = require('randomkey');
 var q = require('./questions');
@@ -16,7 +19,9 @@ var _require2 = require('./instrumentConfig.js'),
 
 var _require3 = require('./componentConstants.js'),
     UI_FUNCTIONS = _require3.UI_FUNCTIONS,
-    KNOB_UNIT = _require3.KNOB_UNIT;
+    KNOB_UNIT = _require3.KNOB_UNIT,
+    UI_FUNCTIONS_SELECTION_NAMES = _require3.UI_FUNCTIONS_SELECTION_NAMES,
+    OTHER_COMPONENTS = _require3.OTHER_COMPONENTS;
 
 var _require4 = require('../generator'),
     createKSP = _require4.createKSP;
@@ -45,10 +50,12 @@ var askInstrumentName = function askInstrumentName() {
  */
 var askUIComponents = function askUIComponents() {
     inquirer.prompt(q.askUIComponentsQ).then(function (response) {
-        config.uiComponents = {};
-        response.uiComponents.forEach(function (comp) {
-            config.uiComponents[comp] = {};
-        });
+        if (!isEmpty(pathOr(false, ['uiComponents'], response))) {
+            config.uiComponents = {};
+            response.uiComponents.forEach(function (comp) {
+                config.uiComponents[comp] = {};
+            });
+        }
         nextQuestion.ask();
     });
 };
@@ -93,7 +100,7 @@ var askUIComponentDetails = function askUIComponentDetails() {
                     config.uiComponents[comp][item] = {
                         name: response.componentName,
                         variableName: '$' + response.componentName,
-                        componentFunction: UI_FUNCTIONS[response.componentFunction],
+                        componentFunction: UI_FUNCTIONS[invert(UI_FUNCTIONS_SELECTION_NAMES)[response.componentFunction]],
                         unit: KNOB_UNIT[response.unit],
                         min: response.componentMin,
                         max: response.componentMax,
@@ -111,6 +118,42 @@ var askUIComponentDetails = function askUIComponentDetails() {
     });
 };
 
+var askOtherComponents = function askOtherComponents() {
+    var chain = Promise.resolve();
+    chain = chain.then(function () {
+        return inquirer.prompt(q.askOtherComponentsQ).then(function (response) {
+            if (!isEmpty(pathOr(false, ['otherComponents'], response))) {
+                config.otherComponents = {};
+                response.otherComponents.forEach(function (comp) {
+                    config.otherComponents[invert(OTHER_COMPONENTS)[comp][0]] = {};
+                });
+            }
+        });
+    });
+
+    // Call next question series
+    chain.then(nextQuestion.ask);
+};
+
+var askOtherComponentsDetails = function askOtherComponentsDetails() {
+    var compList = keys(config.otherComponents);
+    var chain = Promise.resolve();
+
+    compList.forEach(function (comp, i) {
+        // Ask about Modifier Keys
+        if (comp == 'modifierKeys') {
+            chain = chain.then(function () {
+                return inquirer.prompt(q.askModifierKeysDetailsQ).then(function (response) {
+                    config.otherComponents.modifierKeys.first = response.modifier_first;
+                    config.otherComponents.modifierKeys.last = response.modifier_last;
+                });
+            });
+        }
+    });
+    // Call next question series
+    chain.then(nextQuestion.ask);
+};
+
 /**
  * Input: Ask the size of the instrument view
  */
@@ -126,7 +169,7 @@ var askUIHeight = function askUIHeight() {
 */
 var questionController = function questionController() {
     var index = 0;
-    var askQuestion = [askInstrumentName, askUIComponents, askUIComponentsQuantity, askUIComponentDetails, askUIHeight];
+    var askQuestion = [askInstrumentName, askUIComponents, askUIComponentsQuantity, askUIComponentDetails, askOtherComponents, askOtherComponentsDetails, askUIHeight];
 
     return {
         ask: function ask() {
@@ -134,6 +177,7 @@ var questionController = function questionController() {
                 askQuestion[index]();
                 index++;
             } else {
+                console.log(config);
                 createKSP(config);
             }
         }
