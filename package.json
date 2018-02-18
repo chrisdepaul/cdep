@@ -1,16 +1,16 @@
 {
   "name": "cdep",
   "version": "1.0.0",
-  "description": "Generate starter files for Kontakt Script instrumnets",
-  "main": "index.js",
+  "description": "Generate starter files for Kontakt Script instruments",
+  "main": "./dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rimraf dist/ && babel ./ --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files",
-    "start": "npm run build && node dist/index.js",
-    "dev": "nodemon ./index.js"
+    "build": "rimraf dist/ && babel ./src --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files"
   },
   "author": "Chris DePaul",
   "license": "ISC",
+  "bin": {
+    "cdep": "./dist/index.js"
+  },
   "dependencies": {
     "commander": "^2.14.1",
     "inquirer": "^5.1.0",

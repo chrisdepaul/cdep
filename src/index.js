@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const program = require('commander')
 const { launch } = require('./prompter/ask.js')
 
@@ -11,7 +13,7 @@ program
 program
     .command('generate')
     .alias('g')
-    .description('Initiate the instrument generation')
+    .description('Launch the KSP script generator (e.g. cdep generate)')
     .action(launch)
 
 program.parse(process.argv)
