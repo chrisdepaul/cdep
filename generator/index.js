@@ -7,6 +7,7 @@ export const createKSP = (config) => {
     startOnInit(ksp, 0)
         initialization(ksp, config, 1)
         declareComponents(ksp, config, 1)
+        customGraphics(ksp, config, 1)
         makePersistant(ksp, config, 1)
         readPersistant(ksp, config, 1)
     endOn(ksp, 0)
@@ -36,7 +37,7 @@ const initialization = (ksp, config, tabLevel) => {
 const declareComponents = (ksp, config, tabLevel) => {
     const uic = pathOr(false, ['uiComponents'], config);
     if(uic) {
-        keys(uic).forEach((comp) => {
+        keys(uic).forEach((comp, j) => {
             ksp.writeComment(`Declare UI Components - ${comp}`, tabLevel)
             let uiArray = `%ui_${comp.slice(0, -1)}_id`
             let uiArrayLength =  keys(path([comp], uic)).length
@@ -70,10 +71,29 @@ const declareComponents = (ksp, config, tabLevel) => {
                 if (comp == 'knobs') {
                     ksp.writeCode(`set_knob_label(${item.variableName}, get_engine_par_disp(${item.componentFunction}, ${item.variableName}_group, ${item.variableName}_slot, -1))` , tabLevel)
                 }
+                if (config.placeComponents) {
+                    ksp.writeCode(`move_control(${item.variableName}, ${i + 1}, ${j + 1})`, tabLevel)
+                }
                 ksp.blankLine()
             })
         });
     }
+}
+
+const customGraphics = (ksp, config, tabLevel) => {
+    const slidersExist = pathOr(false, ['uiComponents', 'sliders'], config);
+    const custom = path(['customGraphics'], config)
+    if (slidersExist && custom) {
+        ksp.writeComment(`Custom Slider (SlidingBlock image must exist on local machine)`, tabLevel)
+        ksp.writeCode(`$count := 0`, tabLevel)
+        ksp.writeCode(`while ($count < ${keys(config.uiComponents.slides).length})`, tabLevel)
+            ksp.writeCode(`set_control_par_str(%ui_slider_id[$count],$CONTROL_PAR_PICTURE , "SlidingBlock")`, tabLevel + 1)
+            ksp.writeCode(`set_control_par_str(%ui_slider_id[$count],$CONTROL_PAR_MOUSE_BEHAVIOUR , -1000)`, tabLevel + 1)
+            ksp.writeCode(`set_control_par_str(%ui_slider_id[$count],$CONTROL_PAR_WIDTH , 59)`, tabLevel + 1)
+            ksp.writeCode(`set_control_par_str(%ui_slider_id[$count],$CONTROL_PAR_HEIGHT , 108)`, tabLevel + 1)
+            ksp.writeCode(`inc($count)`, tabLevel + 1)
+        ksp.writeCode(`end while`, tabLevel)
+    }    
 }
 
 const makePersistant = (ksp, config, tabLevel) => {

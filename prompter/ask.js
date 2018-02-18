@@ -137,6 +137,32 @@ const askOtherComponentsDetails = () => {
 }
 
 /**
+ * Input: Place components in grid
+ */
+const askPlaceComponents = () => {
+    const compList = keys(config.uiComponents)
+    if(!isEmpty(compList)) {
+       inquirer.prompt(q.askPlaceComponentsQ).then(response => {
+            config.placeComponents = response.placeComponents
+            nextQuestion.ask()
+        }) 
+    }
+}
+
+/**
+ * Input: Use custome graphics
+ */
+const askCustomGraphics = () => {
+    const compList = keys(config.uiComponents)
+    if(!isEmpty(compList)) {
+       inquirer.prompt(q.askCustomGraphicsQ).then(response => {
+            config.customGraphics = response.customGraphics
+            nextQuestion.ask()
+        }) 
+    }
+}
+
+/**
  * Input: Ask the size of the instrument view
  */
 const askUIHeight = () => {
@@ -158,6 +184,8 @@ const questionController = () => {
         askUIComponentDetails,
         askOtherComponents,
         askOtherComponentsDetails,
+        askPlaceComponents,
+        askCustomGraphics,
         askUIHeight,
     ];
 
@@ -167,7 +195,6 @@ const questionController = () => {
                 askQuestion[index]()
                 index++
             } else {
-                console.log(config)
                 createKSP(config)
             }
         }

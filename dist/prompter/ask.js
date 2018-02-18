@@ -155,6 +155,32 @@ var askOtherComponentsDetails = function askOtherComponentsDetails() {
 };
 
 /**
+ * Input: Place components in grid
+ */
+var askPlaceComponents = function askPlaceComponents() {
+    var compList = keys(config.uiComponents);
+    if (!isEmpty(compList)) {
+        inquirer.prompt(q.askPlaceComponentsQ).then(function (response) {
+            config.placeComponents = response.placeComponents;
+            nextQuestion.ask();
+        });
+    }
+};
+
+/**
+ * Input: Use custome graphics
+ */
+var askCustomGraphics = function askCustomGraphics() {
+    var compList = keys(config.uiComponents);
+    if (!isEmpty(compList)) {
+        inquirer.prompt(q.askCustomGraphicsQ).then(function (response) {
+            config.customGraphics = response.customGraphics;
+            nextQuestion.ask();
+        });
+    }
+};
+
+/**
  * Input: Ask the size of the instrument view
  */
 var askUIHeight = function askUIHeight() {
@@ -169,7 +195,7 @@ var askUIHeight = function askUIHeight() {
 */
 var questionController = function questionController() {
     var index = 0;
-    var askQuestion = [askInstrumentName, askUIComponents, askUIComponentsQuantity, askUIComponentDetails, askOtherComponents, askOtherComponentsDetails, askUIHeight];
+    var askQuestion = [askInstrumentName, askUIComponents, askUIComponentsQuantity, askUIComponentDetails, askOtherComponents, askOtherComponentsDetails, askPlaceComponents, askCustomGraphics, askUIHeight];
 
     return {
         ask: function ask() {
@@ -177,7 +203,6 @@ var questionController = function questionController() {
                 askQuestion[index]();
                 index++;
             } else {
-                console.log(config);
                 createKSP(config);
             }
         }

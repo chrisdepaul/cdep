@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.askUIHeightQ = exports.askModifierKeysDetailsQ = exports.askOtherComponentsQ = exports.getUIComponentDetailQuestion = exports.getUIComponentQuantityQuestion = exports.askUIComponentsQ = exports.askInstrumentNameQ = undefined;
+exports.askUIHeightQ = exports.askCustomGraphicsQ = exports.askPlaceComponentsQ = exports.askModifierKeysDetailsQ = exports.askOtherComponentsQ = exports.getUIComponentDetailQuestion = exports.getUIComponentQuantityQuestion = exports.askUIComponentsQ = exports.askInstrumentNameQ = undefined;
 
 var _componentConstants = require('./componentConstants.js');
 
@@ -124,6 +124,26 @@ var askModifierKeysDetailsQ = exports.askModifierKeysDetailsQ = [{
     name: 'modifier_last',
     message: 'last modifier key:',
     default: '12'
+}];
+
+var askPlaceComponentsQ = exports.askPlaceComponentsQ = [{
+    type: 'list',
+    name: 'placeComponents',
+    message: 'Place the compoments in a grid?',
+    choices: ['yes', 'no'],
+    filter: function filter(input) {
+        return input === 'yes' ? true : false;
+    }
+}];
+
+var askCustomGraphicsQ = exports.askCustomGraphicsQ = [{
+    type: 'list',
+    name: 'customGraphics',
+    message: 'Use custom graphics?',
+    choices: ['yes', 'no'],
+    filter: function filter(input) {
+        return input === 'yes' ? true : false;
+    }
 }];
 
 var askUIHeightQ = exports.askUIHeightQ = [{

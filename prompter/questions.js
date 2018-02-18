@@ -112,6 +112,26 @@ export const askModifierKeysDetailsQ = [
     }
 ]
 
+export const askPlaceComponentsQ = [
+    {
+        type: 'list',
+        name: 'placeComponents',
+        message: 'Place the compoments in a grid?',
+        choices: ['yes', 'no'],
+        filter: (input) => input === 'yes' ? true : false
+    }
+]
+
+export const askCustomGraphicsQ = [
+    {
+        type: 'list',
+        name: 'customGraphics',
+        message: 'Use custom graphics?',
+        choices: ['yes', 'no'],
+        filter: (input) => input === 'yes' ? true : false
+    }
+]
+
 export const askUIHeightQ = [
     {
         type: 'input',
