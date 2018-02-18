@@ -4,7 +4,7 @@ const { join, repeat } = require('ramda')
 class GenerateKSP {
     constructor(config) {
         this.instrumentName = config.instrumentName;
-        this.path = 'ksp';
+        this.path = require('path').join(require('os').homedir(), 'Desktop');
         this.fileName = config.instrumentName + '.ksp'
         this.filePath = `${this.path}/${this.fileName}`
         this.fd = this.openFile(this.filePath)
@@ -18,6 +18,7 @@ class GenerateKSP {
         if (this.fd) {
             fs.close(this.fd, () => {
                 console.log('The KSP has been genereated!');
+                console.log(`File saved at ${console.log(this.filePath)}`)
             });
         }
     }

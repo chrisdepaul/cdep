@@ -24,7 +24,7 @@ var createKSP = exports.createKSP = function createKSP(config) {
     generateOnUIControl(ksp, config, 0);
 
     generateOnNote(ksp, config, 0);
-
+    console.log('about to close file');
     ksp.closeFile();
 };
 

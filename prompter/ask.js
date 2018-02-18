@@ -141,12 +141,17 @@ const askOtherComponentsDetails = () => {
  */
 const askPlaceComponents = () => {
     const compList = keys(config.uiComponents)
+    let chain = Promise.resolve()
     if(!isEmpty(compList)) {
-       inquirer.prompt(q.askPlaceComponentsQ).then(response => {
-            config.placeComponents = response.placeComponents
-            nextQuestion.ask()
-        }) 
+        chain = chain.then(() => {
+            return inquirer.prompt(q.askPlaceComponentsQ).then(response => {
+                config.placeComponents = response.placeComponents
+            }) 
+        })
     }
+
+    // Call next question series
+    chain.then(nextQuestion.ask)
 }
 
 /**
@@ -154,22 +159,32 @@ const askPlaceComponents = () => {
  */
 const askCustomGraphics = () => {
     const compList = keys(config.uiComponents)
+    let chain = Promise.resolve()
     if(!isEmpty(compList)) {
-       inquirer.prompt(q.askCustomGraphicsQ).then(response => {
-            config.customGraphics = response.customGraphics
-            nextQuestion.ask()
-        }) 
+        chain = chain.then(() => {
+            return inquirer.prompt(q.askCustomGraphicsQ).then(response => {
+                config.customGraphics = response.customGraphics
+            })
+        })
     }
+
+    // Call next question series
+    chain.then(nextQuestion.ask)
 }
 
 /**
  * Input: Ask the size of the instrument view
  */
 const askUIHeight = () => {
-    inquirer.prompt(q.askUIHeightQ).then(response => {
-        config.uiHeight = response.uiHeight
-        nextQuestion.ask()
+    let chain = Promise.resolve()
+    chain = chain.then(() => {
+        return inquirer.prompt(q.askUIHeightQ).then(response => {
+            config.uiHeight = response.uiHeight
+        })
     })
+
+    // Call next question series
+    chain.then(nextQuestion.ask)
 }
 
 /** 

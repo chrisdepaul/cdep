@@ -19,7 +19,7 @@ var GenerateKSP = function () {
         _classCallCheck(this, GenerateKSP);
 
         this.instrumentName = config.instrumentName;
-        this.path = 'ksp';
+        this.path = require('path').join(require('os').homedir(), 'Desktop');
         this.fileName = config.instrumentName + '.ksp';
         this.filePath = this.path + '/' + this.fileName;
         this.fd = this.openFile(this.filePath);
@@ -33,6 +33,7 @@ var GenerateKSP = function () {
     }, {
         key: 'closeFile',
         value: function closeFile() {
+            console.log(this.filePath);
             if (this.fd) {
                 fs.close(this.fd, function () {
                     console.log('The KSP has been genereated!');

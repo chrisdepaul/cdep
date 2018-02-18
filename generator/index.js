@@ -15,7 +15,6 @@ export const createKSP = (config) => {
     generateOnUIControl(ksp, config, 0)
 
     generateOnNote(ksp, config, 0)
-
     ksp.closeFile()
 }
 
