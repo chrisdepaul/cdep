@@ -16,4 +16,4 @@ program
     .description('Launch the KSP script generator (e.g. cdep generate)')
     .action(launch)
 
-program.parse(process.argv)
+program.parse(process.argv) 

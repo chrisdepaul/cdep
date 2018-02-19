@@ -18,7 +18,7 @@ class GenerateKSP {
         if (this.fd) {
             fs.close(this.fd, () => {
                 console.log('The KSP has been genereated!');
-                console.log(`File saved at ${console.log(this.filePath)}`)
+                console.log(`File saved at ${this.filePath}`)
             });
         }
     }
