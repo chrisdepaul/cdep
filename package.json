@@ -1,8 +1,8 @@
 {
   "name": "cdep",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Generate starter files for Kontakt Script instruments",
-  "main": "./dist/index.js",
+  "main": "index.js",
   "scripts": {
     "build": "rimraf dist/ && babel ./src --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files"
   },
