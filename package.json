@@ -1,6 +1,6 @@
 {
   "name": "cdep",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Generate starter files for Kontakt Script instruments",
   "main": "index.js",
   "scripts": {
@@ -11,9 +11,9 @@
   "bin": {
     "cdep": "./dist/index.js"
   },
-  "repository": { 
-    "type" : "git",
-    "url" : "https://github.com/chrisdepaul/cdep"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chrisdepaul/cdep"
   },
   "dependencies": {
     "commander": "^2.14.1",
